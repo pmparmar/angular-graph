@@ -1,0 +1,265 @@
+﻿<div class="widget-content text-center text-info" data-ng-controller="LogHistory as vm">
+    <div>
+        <div class="tableWrapper tableWrapperTall">
+            <table ng-hide="vm.loading || vm.sorting || vm.logs.length == 0" class="table table-condensed table-striped filter_container">
+                <thead>
+                    <tr>
+                        <th>
+                            <span uib-popover-template="vm.popover.template_username" popover-placement="left-bottom" popover-elem
+                                  class="fa fa-filter popover-element"
+                                  ng-class="{'popover-element-select': vm.fl_UserName}"
+                                  aria-hidden="true" id="btnUserName"></span>
+                            <span ng-class="{'userActive': vm.sortName=='UserName'}"><a href ng-click="vm.sort('UserName')">Name</a></span>
+                        </th>
+
+
+                        <th class="LHtime2">
+                            <span uib-popover-template="vm.popover.template_userid" popover-placement="left-bottom" popover-elem
+                                  class="fa fa-filter popover-element"
+                                  ng-class="{'popover-element-select': vm.fl_UserID}"
+                                  aria-hidden="true" id="btnUserID"></span>
+                            <span ng-class="{'userActive': vm.sortName=='UserID'}"><a href ng-click="vm.sort('UserID')">User ID</a></span>
+                        </th>
+                        <th>
+                            <span uib-popover-template="vm.popover.template_roleid" popover-placement="left-bottom" popover-elem
+                                  class="fa fa-filter popover-element"
+                                  ng-class="{'popover-element-select': vm.fl_RoleID}"
+                                  aria-hidden="true" id="btnRoleID"></span>
+                            <span ng-class="{'userActive': vm.sortName=='RoleID'}"><a href ng-click="vm.sort('RoleID')">Role ID</a></span>
+                        </th>
+                        <th>
+                            <span uib-popover-template="vm.popover.template_clientid" popover-placement="left-bottom" popover-elem
+                                  class="fa fa-filter popover-element"
+                                  ng-class="{'popover-element-select': vm.fl_ClientID}"
+                                  aria-hidden="true" id="btnClientID"></span>
+                            <span ng-class="{'userActive': vm.sortName=='ClientID'}"><a href ng-click="vm.sort('ClientID')">Client</a></span>
+                        </th>
+                        <th>
+                            <span uib-popover-template="vm.popover.template_matterid" popover-placement="left-bottom" popover-elem
+                                  class="fa fa-filter popover-element"
+                                  ng-class="{'popover-element-select': vm.fl_MatterID}"
+                                  aria-hidden="true" id="btnMatterID"></span>
+                            <span ng-class="{'userActive': vm.sortName=='MatterID'}"><a href ng-click="vm.sort('MatterID')">Matter</a></span>
+                        </th>
+                        <th>
+                            <span uib-popover-template="vm.popover.template_timestamp" popover-placement="left-bottom" popover-elem
+                                  ng-class="{'popover-element-select': vm.fl_Timestamp_Start || fl_DateEntry_End}"
+                                  class="fa fa-filter popover-element" aria-hidden="true" id="btnDateEntry"></span>
+                            <span ng-class="{'userActive': vm.sortName=='LastTimeEntry'}"><a href ng-click="vm.sort('LastTimeEntry')">Timestamp</a></span>
+                        </th>
+                        <th style="line-height: 1.42857143 !important">
+                            <span ng-class="{'userActive': vm.sortName=='Query'}"><a href ng-click="vm.sort('Query')">Query</a></span>
+                        </th>
+                        <th style="line-height: 1.42857143 !important">
+                            <span ng-class="{'userActive': vm.sortName=='Machine'}"><a href ng-click="vm.sort('Machine')">Machine</a></span>
+                        </th>
+                        <th style="line-height: 1.42857143 !important">
+                            <span ng-class="{'userActive': vm.sortName=='UserName'}"><a href ng-click="vm.sort('UserName')">Username</a></span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--<tr data-ng-repeat="row in vm.logs track by row._id">-->
+                    <tr data-ng-repeat="row in vm.logs">
+                        <td>{{row.loggedInUserName}}</td>
+                        <td>{{vm.getValueFromID(row.userID,row.userFullName)}}</td>
+                        <td>{{vm.getRoleName(row.roleID)}}</td>
+                        <td>{{vm.getValueFromID(row.clientID, row.clientName)}}</td>
+                        <td>{{vm.getValueFromID(row.matterID, row.matterName)}}</td>
+                        <td>{{row.requestTimestamp|date:'MM/dd/yy hh:mm a'}}</td>
+                        <td>{{row.requestRouteTemplate}}</td>
+                        <td>{{row.machine}}</td>
+                        <td>{{row.userName}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div ng-show="!vm.loading && vm.logs.length == 0">
+                No Records found
+                <button class="btn  pull-right" type="button" ng-click="vm.clearFilters()">
+                    Clear All Filters
+                </button>
+            </div>
+            <!--<img ng-show="vm.loading || vm.sorting" src="Images/spinner.gif" class="dataloading" />-->
+        </div>
+        <div class="timeButton" ng-show="vm.logs.length > 0">
+            <button class="btn  pull-right" type="button" ng-disabled11="vm.loading || vm.sorting" ng-click="vm.clearFilters()">
+                Clear All Filters
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="popover_template_username.html">
+    <div class="popStyle admin" style="position:absolute">
+        <span class="search searchAd dropdown">
+            <input type="text" class="form-control input-sm exclude" id="searchBox"
+                   ng-model="vm.fl_UserName" ng-change="vm.search(vm.fl_UserName)" ng-keyup="vm.checkEvents($event)" on-enter="vm.applyFilter('UserName');">
+            <i class="fa" data-ng-click="vm.search(vm.fl_UserName)"></i>
+        </span>
+        <table class="popover-table">
+            <tr>
+                <td>
+                    <div style="position:relative;">
+                        <table class="table table-condensed table-striped" id="suggestionTable">
+                            <tbody>
+                                <tr data-ng-repeat="a in vm.attorneys">
+                                    <td class="text-left">
+                                        <a href ng-click="vm.applyFilterUserName(a.userID);">
+                                            {{a.lastName}}, {{a.firstName}}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <!--<button type="button" class="btn btn-info btn-sm exclude" ng-click="vm.applyFilter('UserName');">Apply Filter</button>-->
+                    <button type="button" class="btn btn-warning btn-sm exclude" style="float:right" ng-click="vm.clearFilter('UserName');">Clear Filter</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</script>
+
+<script type="text/ng-template" id="popover_template_userid.html">
+    <div class="popStyle adminTop">
+        <table class="popover-table">
+            <tr>
+                <td>
+                    <input type="number" class="form-control input-sm exclude"
+                           ng-model="vm.fl_UserID" on-enter="vm.applyFilter('UserID');">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm exclude" ng-click="vm.applyFilter('UserID');">Apply Filter</button>
+                    <button type="button" class="btn btn-warning btn-sm exclude" ng-click="vm.clearFilter('UserID');">Clear Filter</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</script>
+
+<script type="text/ng-template" id="popover_template_roleid.html">
+    <div class="popStyle adminTop">
+        <table class="popover-table">
+            <tr>
+                <td>
+                    <input type="number" class="form-control input-sm exclude"
+                           ng-model="vm.fl_RoleID" on-enter="vm.applyFilter('RoleID');">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm exclude" ng-click="vm.applyFilter('RoleID');">Apply Filter</button>
+                    <button type="button" class="btn btn-warning btn-sm exclude" ng-click="vm.clearFilter('RoleID');">Clear Filter</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</script>
+
+<script type="text/ng-template" id="popover_template_clientid.html">
+    <div class="popStyle adminTop">
+        <table class="popover-table">
+            <tr>
+                <td>
+                    <input type="number" class="form-control input-sm exclude"
+                           ng-model="vm.fl_ClientID" on-enter="vm.applyFilter('ClientID');">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm exclude" ng-click="vm.applyFilter('ClientID');">Apply Filter</button>
+                    <button type="button" class="btn btn-warning btn-sm exclude" ng-click="vm.clearFilter('ClientID');">Clear Filter</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</script>
+
+<script type="text/ng-template" id="popover_template_matterid.html">
+    <div class="popStyle adminTop">
+        <table class="popover-table">
+            <tr>
+                <td>
+                    <input type="number" class="form-control input-sm exclude"
+                           ng-model="vm.fl_MatterID" on-enter="vm.applyFilter('MatterID');">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm exclude" ng-click="vm.applyFilter('MatterID');">Apply Filter</button>
+                    <button type="button" class="btn btn-warning btn-sm exclude" ng-click="vm.clearFilter('MatterID');">Clear Filter</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</script>
+
+<script type="text/ng-template" id="popover_template_timestamp.html">
+    <div class="popStyle adminTop">
+        <table class="popover-table">
+            <tr>
+                <td>
+                    <span>From:</span><br />
+                    <input type="text" class="form-control input-sm exclude"
+                           ng-model="vm.fl_Timestamp_Start"
+                           on-enter="vm.applyFilter('Timestamp')"
+                           datetimepicker
+                           datetimepicker-options="{useCurrent: false, format:'MM/DD/YYYY',icons:{next:'glyphicon glyphicon-arrow-right',previous:'glyphicon glyphicon-arrow-left',up:'glyphicon glyphicon-arrow-up',down:'glyphicon glyphicon-arrow-down'}}" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>To:</span><br />
+                    <input type="text" class="form-control input-sm exclude"
+                           ng-model="vm.fl_Timestamp_End"
+                           on-enter="vm.applyFilter('Timestamp')"
+                           datetimepicker
+                           datetimepicker-options="{useCurrent: false, format:'MM/DD/YYYY',icons:{next:'glyphicon glyphicon-arrow-right',previous:'glyphicon glyphicon-arrow-left',up:'glyphicon glyphicon-arrow-up',down:'glyphicon glyphicon-arrow-down'}}" />
+                </td>
+            </tr>
+            <!--<tr ng-if="vm.isIE">
+                <td>
+                    <span>From:</span><br />
+
+                    <p class="input-group">
+                        <input id="txtTimestampFrom" type="text" class="form-control input-sm exclude"
+                               uib-datepicker-popup="MM/dd/yyyy"
+                               ng-model="vm.fl_Timestamp_Start"
+                               is-open="vm.dateFromStatus.opened"
+                               ng-pattern="vm.datePattern" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default btn-sm" ng-click="vm.openFrom()"><i class="fa fa-calendar"></i></button>
+                        </span>
+                    </p>
+                </td>
+            </tr>
+            <tr ng-if="vm.isIE">
+                <td>
+                    <span>To:</span><br />
+                    <p classToinput-group">
+                        <input id="txtTimestampTo" type="text" class="form-control input-sm exclude"
+                               uib-datepicker-popup="MM/dd/yyyy"
+                               ng-model="vm.fl_Timestamp_End"
+                               is-open="vm.dateToStatus.opened"
+                               ng-pattern="vm.datePattern" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default btn-sm" ng-click="vm.openTo()"><i class="fa fa-calendar"></i></button>
+                        </span>
+                    </p>
+                </td>
+            </tr>-->
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm exclude" ng-click="vm.applyFilter('Timestamp');">Apply Filter</button>
+                    <button type="button" class="btn btn-warning btn-sm exclude" ng-click="vm.clearFilter('Timestamp');">Clear Filter</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</script>
