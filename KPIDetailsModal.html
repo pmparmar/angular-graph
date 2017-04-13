@@ -1,0 +1,100 @@
+﻿<section id="dashboard-view" class="modal willkie-modal" >    
+    <div class="modal-header">
+        <button type="button" class="close" data-ng-click="vm.closeModal()">
+            <span aria-hidden="true"><i class="fa fa-times"></i></span>
+            <span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title">
+            {{vm.title}}{{ vm.isDisplayingMonthlyData ? vm.monthTitle : '' }}
+
+            <span data-ng-show="vm.isDisplayingMonthlyData && !vm.loading">
+                Amount: {{ vm.monthlyTotal | round | addCommas }} 
+            </span>
+            <span data-ng-show="vm.isDisplayingMonthlyData && !vm.loading">
+                YTD: {{ vm.yearlyTotal | round | addCommas }}
+            </span>
+        </h4>
+        
+        <select class="dropdown dropModal rtMar" 
+                ng-model="vm.selectedGroupBy" 
+                ng-options="x as x.Text for x in vm.GroupBys track by x.Id" 
+                ng-change="vm.selectedGroupByChange()"
+                ng-disabled="vm.loading"></select>
+
+        <select class="dropdown dropModal rtMar"
+                ng-model="vm.selectedYear" 
+                ng-options="x for x in vm.timeFrames" 
+                ng-change="vm.selectedYearChange()"
+                ng-disabled="vm.loading"
+                ng-hide="vm.isDisplayingMonthlyData"
+                ></select>
+        
+        <button type="button"
+                class="btn btn-default dropdown dropModal rtMar"
+                ng-show="vm.isDisplayingMonthlyData"
+                ng-click="vm.backToYearlyData()">
+            <i class="fa fa-chevron-left"></i>Back
+        </button>
+     </div>
+    <div class="modal-body">
+        <div class="modal-table">
+            <div class="tableWrapper" infinite-scroll="vm.loadData()" infinite-scroll-parent="true">
+                <table ng-hide="vm.loading || vm.statistics.length == 0" class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th class="text-left kpicol1" style="color:#404040 !important;">{{vm.columnHeader1}}<div>{{vm.columnHeader1}}</div></th>
+                            <th class="text-right kpicol2" style="color:#404040 !important;">{{vm.columnHeader2}}<div>{{vm.columnHeader2}}</div></th>
+                            <th ng-hide="vm.columnHeader3 == ''" class="text-right kpicol3" style="color:#404040 !important;">{{vm.columnHeader3}}<div>{{vm.columnHeader3}}</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-ng-repeat="item in vm.statistics">
+                            <td class="text-left">
+                                <a data-ng-if="item.Route && vm.selectedGroupBy.Id == vm._groupBys.Matter.Id" href="{{item.Route}}" ng-click="vm.selectItem()"
+                                   uib-popover-template="vm.popover.template_matter_details"
+                                   data-popover-trigger="mouseenter"
+                                   popover-placement="right"
+                                >
+                                    {{item.ColumnData1}}
+                                </a>
+
+                                <a data-ng-if="item.Route && vm.selectedGroupBy.Id != vm._groupBys.Matter.Id" href="{{item.Route}}" ng-click="vm.selectItem()">
+                                    {{item.ColumnData1}} 
+                                </a>
+
+                                <span data-ng-if="item.Route.length == 0">
+                                    {{item.ColumnData1}}
+                                </span>
+                            </td>
+                            <td class="text-right">{{(item.ColumnData2 || '-') | number: 0 | addParenthesis | addCommas }}</td>
+                            <td ng-hide="vm.columnHeader3 == ''" class="text-right">
+                                <span data-ng-if="vm.selectedCategory.Id == vm.drilldownDetailsSharedService.categories.Writeoffs.Id">
+                                    {{ (item.ColumnData3 || '-') | percentage: 1 | addParenthesis |replaceWith: '-'}} %
+                                </span>
+                                <span data-ng-if="vm.selectedCategory.Id != vm.drilldownDetailsSharedService.categories.Writeoffs.Id">
+                                    {{ (item.ColumnData3 || '-') | number: 0 | addParenthesis | addCommas |replaceWith: '-' }}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div ng-show="!vm.loading && vm.statistics.length == 0">
+                No Records found
+            </div>
+
+
+            <img ng-show="vm.loading" src="Images/spinner.gif" class="dataloading" />
+
+            <div ng-show="!vm.loading && vm.error">
+                <div data-ng-bind-html="vm.error"></div>
+            </div>
+            <h4>
+                <canvas id="kpi-details-modal-chart" class="chart chart-bar"
+                        data-ng-hide="vm.barchartloading" style="cursor: pointer;"
+                        height="100" width="900"></canvas>
+            </h4>
+        </div>        
+    </div>    
+</section>

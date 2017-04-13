@@ -1,0 +1,63 @@
+﻿<div data-ng-controller="TimeKPIController as vm">
+
+    <div class="col-sm-2 col-lg-2">
+          <div class="KPI" data-ng-click="vm.showKPIDetails(vm.BillableTime)">
+            <span class="KpiHeader">YTD Billable Hours</span>
+            <img data-ng-show="vm.loading" src="Images/spinner.gif" class="dataloading" />
+            <span class="KpiSum" 
+                  data-ng-hide="vm.loading || vm.fnBillableTime(vm.timeStatisticsByYear[0]) == 0">{{ vm.fnBillableTime(vm.timeStatisticsByYear[0]) | numberShort | addParenthesis | replaceWith: '-'}}</span>
+        <!-- Duplicate for 0 values -->      
+        <span class="KpiSum"
+                    data-ng-show="!vm.loading &&  vm.fnBillableTime(vm.timeStatisticsByYear[0]) == 0">{{vm.fnBillableTime(vm.timeStatisticsByYear[0]) | replaceWith: '-' }}</span>
+          
+            <span class="YOY" 
+                  data-ng-hide="vm.loading || vm.billableHoursYOY == null" 
+                  data-ng-class="{'KpiGreen': vm.billableHoursYOY.change > 0, 'KpiOrange': vm.billableHoursYOY.change < 0 }">
+                <i data-ng-show="vm.billableHoursYOY.change > 0" class="fa fa-chevron-up"></i>
+                <i data-ng-show="vm.billableHoursYOY.change < 0" class="fa fa-chevron-down"></i>
+                {{vm.billableHoursYOY.change | percentage }}% YOY
+            </span>
+
+            <span class="graph">
+                <canvas id="kpi-bar-chart" class="chart chart-bar"
+                        data-ng-hide="vm.barchartLoading || (vm.isChartDataEmpty(vm.billableHoursChartData[0]) && vm.isChartDataEmpty(vm.billableHoursChartData[1]))"
+                        chart-data="vm.billableHoursChartData" 
+                        chart-labels="vm.billableHoursChartLabels"
+                        chart-colors="vm.colors"
+                        chart-series="vm.series"
+                        chart-options="vm.barchart.options" height="65" width="200"></canvas>
+            </span>
+        </div><!---KPI-->
+    </div><!---col-lg-4-->
+
+    <div class="col-sm-2 col-lg-2">
+        <div class="KPI" data-ng-click="vm.showKPIDetails(vm.BillableMoney)">
+            <span class="KpiHeader">YTD <span data-ng-bind="vm.currencyName"></span> Worked</span>
+            <img data-ng-show="vm.loading" src="Images/spinner.gif" class="dataloading" />
+            <span class="KpiSum"
+                   data-ng-hide="vm.loading || vm.fnBillableMoney(vm.timeStatisticsByYear[0]) == 0">{{vm.fnBillableMoney(vm.timeStatisticsByYear[0]) | numberShort | addParenthesis | currencySymbol | replaceWith: '-'}}</span>
+            <!-- Duplicate for 0 values -->   
+            <span class="KpiSum"
+                  data-ng-show="!vm.loading &&  vm.fnBillableMoney(vm.timeStatisticsByYear[0]) == 0">{{vm.fnBillableMoney(vm.timeStatisticsByYear[0]) | replaceWith: '-'}}</span>
+
+            <span class="YOY" 
+                  data-ng-hide="vm.loading || vm.billableMoneyYOY == null" 
+                  data-ng-class="{'KpiGreen': vm.billableMoneyYOY.change > 0, 'KpiOrange': vm.billableMoneyYOY.change < 0 }">
+                <i data-ng-show="vm.billableMoneyYOY.change > 0" class="fa fa-chevron-up"></i>
+                <i data-ng-show="vm.billableMoneyYOY.change < 0" class="fa fa-chevron-down"></i>
+                {{vm.billableMoneyYOY.change | percentage }}% YOY
+            </span>
+
+            <span class="graph">
+                <canvas id="kpi-bar-chart" class="chart chart-bar"
+                        data-ng-hide="vm.barchartLoading || (vm.isChartDataEmpty(vm.dollarsWorkedChartData[0]) && vm.isChartDataEmpty(vm.dollarsWorkedChartData[1]))"
+                        chart-data="vm.dollarsWorkedChartData" 
+                        chart-labels="vm.dollarsWorkedChartLabels"
+                        chart-colors="vm.colors"
+                         chart-series="vm.series"
+                        chart-options="vm.barchart.options" height="65" width="200"></canvas>
+            </span>
+        </div><!---KPI-->
+    </div><!---col-lg-4-->
+</div>
+
